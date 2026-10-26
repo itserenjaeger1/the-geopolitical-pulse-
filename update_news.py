@@ -8,13 +8,20 @@ import google.generativeai as genai
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set.")
+# Add this line to clean the hidden spaces or newlines
+api_key = api_key.strip()    
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-# 2. Define High-Quality RSS Feeds
+# 2. Define High-Quality RSS Feeds below is old block , new one is below for RSS feeds
+#FEEDS = {
+#    "UN Global News": "https://un.org",
+#    "CNBC World Economy": "https://cnbc.com"
+#}
+
 FEEDS = {
-    "UN Global News": "https://un.org",
-    "CNBC World Economy": "https://cnbc.com"
+    "UN Global News": "https://news.un.org/feed/view/en/story/ticker/rss",
+    "CNBC World Economy": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100727362"
 }
 
 html_articles = ""
