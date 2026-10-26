@@ -1,5 +1,6 @@
 import os
 import time
+import re
 import feedparser
 import google.generativeai as genai
 
@@ -37,12 +38,14 @@ for source_name, url in FEEDS.items():
         
         try:
             response = model.generate_content(prompt)
-            ai_text = response.text.strip()
+            # Removes bold formatting
+            ai_text = response.text.replace("**", "").replace("*", "").strip()
             
             lines = ai_text.split("\n")
             bullets_html = ""
             for line in lines:
-                clean_line = line.strip().lstrip("*").lstrip("-").strip()
+                # Strips any combination of dashes, bullets, or numbers
+                clean_line = re.sub(r'^[-•+]\s*|^\d+\.\s*', '', line.strip()).strip()
                 if clean_line:
                     bullets_html += f"<li>{clean_line}</li>"
             
@@ -59,7 +62,7 @@ for source_name, url in FEEDS.items():
         time.sleep(2)
 
 # 4. Generate the Final Dashboard Template
-current_date = time.strftime("%B %d, %Y")
+current_date = time.strftime("%B %d, %Y at %I:%M %p")
 html_template = f"""
 <!DOCTYPE html>
 <html lang="en">
