@@ -2,16 +2,20 @@ import os
 import time
 import re
 import feedparser
-import google.generativeai as genai
+from google import genai
 
 # 1. Configure Gemini API
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set.")
+
 # Add this line to clean the hidden spaces or newlines
 api_key = api_key.strip()    
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-1.5-flash')
+
+#genai.configure(api_key=api_key)
+## Replace with new gen_api key
+client = genai.Client(api_key=api_key)
+#model = genai.GenerativeModel('gemini-1.5-flash')
 
 # 2. Define High-Quality RSS Feeds below is old block , new one is below for RSS feeds
 #FEEDS = {
@@ -44,18 +48,28 @@ for source_name, url in FEEDS.items():
         )
         
         try:
-            response = model.generate_content(prompt)
-            # Removes bold formatting
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt
+            )
+
+            # removes bold formatting
             ai_text = response.text.replace("**", "").replace("*", "").strip()
-            
+
             lines = ai_text.split("\n")
             bullets_html = ""
+
             for line in lines:
-                # Strips any combination of dashes, bullets, or numbers
-                clean_line = re.sub(r'^[-•+]\s*|^\d+\.\s*', '', line.strip()).strip()
+                # strips bullets or numbered-list prefixes
+                clean_line = re.sub(
+                    r"^[-•+]\s*|^\d+\.\s*",
+                    "",
+                    line.strip()
+                ).strip()
+
                 if clean_line:
                     bullets_html += f"<li>{clean_line}</li>"
-            
+
             html_articles += f"""
             <div class="card">
                 <div class="source">{source_name}</div>
@@ -63,11 +77,11 @@ for source_name, url in FEEDS.items():
                 <ul>{bullets_html}</ul>
             </div>
             """
+
         except Exception as e:
             print(f"Error processing '{title}': {e}")
-        
-        time.sleep(2)
 
+        time.sleep(2)
 # 4. Generate the Final Dashboard Template
 current_date = time.strftime("%B %d, %Y at %I:%M %p")
 html_template = f"""
