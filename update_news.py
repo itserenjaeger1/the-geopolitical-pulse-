@@ -155,7 +155,7 @@ html_template = f"""
 <body>
     <div class="container">
         <header>
-            <h1>Socioeconomic & Geopolitical Brief</h1>
+            <h1>Socioeconomic & Geopolitical Brief Updated Test</h1>
             <div class="date">Updated automatically on {current_date}</div>
         </header>
         <div class="grid">
