@@ -15,7 +15,7 @@ api_key = api_key.strip()
 #genai.configure(api_key=api_key)
 ## Replace with new gen_api key
 client = genai.Client(api_key=api_key)
-model = genai.GenerativeModel('gemini-1.5-flash')
+#model = genai.GenerativeModel('gemini-1.5-flash')
 
 # 2. Define High-Quality RSS Feeds below is old block , new one is below for RSS feeds
 #FEEDS = {
