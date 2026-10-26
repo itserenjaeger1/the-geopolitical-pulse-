@@ -20,9 +20,10 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 # Optionally set GEMINI_MODEL in GitHub Actions variables.
-PREFERRED_MODEL = os.environ.get(
-    "GEMINI_MODEL", "gemini-2.5-flash"
-)
+PREFERRED_MODEL = "gemini-3.8-flash"
+#PREFERRED_MODEL = os.environ.get(
+#    "GEMINI_MODEL", "gemini-2.5-flash"
+#)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -38,52 +39,8 @@ FEEDS = {
 ARTICLES_PER_FEED = 3
 REQUEST_DELAY = 2
 
-# --------------------------------------------------
-# 3. Find a model supported by your API key
-# --------------------------------------------------
-
-def get_model():
-    try:
-        available = []
-
-        for item in client.models.list():
-            actions = item.supported_actions or []
-            if "generateContent" in actions:
-                available.append(item.name.split("/")[-1])
-
-        if not available:
-            raise RuntimeError(
-                "No models supporting generateContent were found."
-            )
-
-        if PREFERRED_MODEL in available:
-            logging.info("Using model: %s", PREFERRED_MODEL)
-            return PREFERRED_MODEL
-
-        # Prefer Flash models when the configured model is unavailable.
-        flash_models = [
-            name for name in available
-            if "flash" in name.lower()
-        ]
-
-        if flash_models:
-            selected = sorted(flash_models)[0]
-        else:
-            selected = available[0]
-
-        logging.warning(
-            "Configured model unavailable; using %s", selected
-        )
-        return selected
-
-    except Exception as exc:
-        raise RuntimeError(
-            "Could not list Gemini models. Check API access, "
-            f"the API key, and network connection. Details: {exc}"
-        ) from exc
-
-
-MODEL = get_model()
+MODEL = "gemini-3.8-flash"
+logging.info("Using Gemini model: %s", MODEL)
 
 # --------------------------------------------------
 # 4. Clean incoming feed content
