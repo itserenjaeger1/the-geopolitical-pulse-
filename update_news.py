@@ -2,15 +2,19 @@ import os
 import time
 import re
 import feedparser
-import google.generativeai as genai
+from google import genai
 
 # 1. Configure Gemini API
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set.")
+
 # Add this line to clean the hidden spaces or newlines
 api_key = api_key.strip()    
-genai.configure(api_key=api_key)
+
+#genai.configure(api_key=api_key)
+## Replace with new gen_api key
+client = genai.Client(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 # 2. Define High-Quality RSS Feeds below is old block , new one is below for RSS feeds
@@ -43,8 +47,11 @@ for source_name, url in FEEDS.items():
             f"Summary: {summary}"
         )
         
-        try:
-            response = model.generate_content(prompt)
+      try:
+            response = client.models.generate_content(
+                model='gemini-1.5-flash',
+                contents=prompt
+            )
             # Removes bold formatting
             ai_text = response.text.replace("**", "").replace("*", "").strip()
             
