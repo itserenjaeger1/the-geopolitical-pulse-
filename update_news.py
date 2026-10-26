@@ -47,22 +47,29 @@ for source_name, url in FEEDS.items():
             f"Summary: {summary}"
         )
         
-      try:
+        try:
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model="gemini-1.5-flash",
                 contents=prompt
             )
-            # Removes bold formatting
+
+            # removes bold formatting
             ai_text = response.text.replace("**", "").replace("*", "").strip()
-            
+
             lines = ai_text.split("\n")
             bullets_html = ""
+
             for line in lines:
-                # Strips any combination of dashes, bullets, or numbers
-                clean_line = re.sub(r'^[-•+]\s*|^\d+\.\s*', '', line.strip()).strip()
+                # strips bullets or numbered-list prefixes
+                clean_line = re.sub(
+                    r"^[-•+]\s*|^\d+\.\s*",
+                    "",
+                    line.strip()
+                ).strip()
+
                 if clean_line:
                     bullets_html += f"<li>{clean_line}</li>"
-            
+
             html_articles += f"""
             <div class="card">
                 <div class="source">{source_name}</div>
@@ -70,11 +77,11 @@ for source_name, url in FEEDS.items():
                 <ul>{bullets_html}</ul>
             </div>
             """
+
         except Exception as e:
             print(f"Error processing '{title}': {e}")
-        
-        time.sleep(2)
 
+        time.sleep(2)
 # 4. Generate the Final Dashboard Template
 current_date = time.strftime("%B %d, %Y at %I:%M %p")
 html_template = f"""
